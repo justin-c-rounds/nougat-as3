@@ -1,0 +1,9 @@
+var xml:XML =
+<root>
+	<meta>
+		<stage width="640" height="480" />
+	</meta>
+	<scenario id="game start">
+		<actor class="org.justincrounds.actionscript.TextDisplay" name="title" text="hello, world!" x="320" y="240" font="DejaVuSans" size="20" color="#FFFFFF" alignH="center" />
+	</scenario>
+</root>
