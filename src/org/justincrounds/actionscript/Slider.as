@@ -92,10 +92,11 @@ package org.justincrounds.actionscript {
 			update();
 		}
 		protected function update():void {
+			this.currentValue = Math.round(this.currentValue / this.stepSize) * this.stepSize;
 			if (this.orientation == 'horizontal') {
-				this.thumb.x = (this.currentValue * ((this.trackLength - this.thumbSize) / (this.maximumValue - this.minimumValue))) + this.trackStart;
+				this.thumb.x = ((this.currentValue - this.minimumValue) * ((this.trackLength - this.thumbSize) / (this.maximumValue - this.minimumValue))) + this.trackStart;
 			} else if (this.orientation == 'vertical') {
-				this.thumb.y = (this.currentValue * ((this.trackLength - this.thumbSize) / (this.maximumValue - this.minimumValue))) + this.trackStart;
+				this.thumb.y = ((this.currentValue - this.minimumValue) * ((this.trackLength - this.thumbSize) / (this.maximumValue - this.minimumValue))) + this.trackStart;
 			}
 			this.controller.broadcast(this.action, this.currentValue); 
 		}
