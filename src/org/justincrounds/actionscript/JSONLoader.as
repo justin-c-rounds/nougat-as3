@@ -40,7 +40,6 @@ package org.justincrounds.actionscript {
 		*/
 		protected function loadComplete(e:Event):void {
 			//loader.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, loadProgress);
-			this.removeEventListener(Event.COMPLETE, loadComplete);
 			dispatchEvent(new BroadcastEvent("JSON LOADED", JSON.decode(this.data)));
 		}
 		public function post(u:String, d:String):void {
