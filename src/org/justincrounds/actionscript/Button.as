@@ -2,6 +2,7 @@ package org.justincrounds.actionscript {
 	import flash.events.*;
 	public class Button extends Actor {
 		public var action:String;
+		public var ignoresDisable:Boolean;
 		public var param:Object;
 		public var tooltip:String;
 		public function Button() {
@@ -67,12 +68,12 @@ package org.justincrounds.actionscript {
 			controller.broadcast("hide tooltip");
 		}
 		protected function disableButton(e:BroadcastEvent):void {
-			if (e.type == "DISABLE BUTTONS" || (e.type == "DISABLE BUTTON" && e.object == this.name)) {
+			if (!ignoresDisable && (e.type == "DISABLE BUTTONS" || (e.type == "DISABLE BUTTON" && e.object == this.name))) {
 				this.mouseEnabled = false;
 			}
 		}
 		protected function enableButton(e:BroadcastEvent):void {
-			if (e.type == "ENABLE BUTTONS" || (e.type == "ENABLE BUTTON" && e.object == this.name)) {
+			if (!ignoresDisable && (e.type == "ENABLE BUTTONS" || (e.type == "ENABLE BUTTON" && e.object == this.name))) {
 				this.mouseEnabled = true;
 			}
 		}
