@@ -70,12 +70,19 @@ package org.justincrounds.actionscript {
 			this.thumb.buttonMode = true;
 			this.thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbOn, false, 0, true);
 		}
+		override public function set controller(c:Controller):void {
+			super.controller = c;
+			controller.addEventListener('ENABLE BUTTONS', enableButtons, false, 0, true);
+			controller.addEventListener('DISABLE BUTTONS', disableButtons, false, 0, true);
+		}
 		override protected function addedToStage(e:Event):void {
 			parent.addEventListener(MouseEvent.MOUSE_MOVE, thumbMove, false, 0, true);
 			parent.addEventListener(MouseEvent.MOUSE_UP, thumbOff, false, 0, true);
 			super.addedToStage(e);
 		}
 		override protected function removedFromStage(e:Event):void {
+			controller.removeEventListener('ENABLE BUTTONS', enableButtons);
+			controller.removeEventListener('DISABLE BUTTONS', disableButtons);
 			this.incrementerButton.removeEventListener(MouseEvent.CLICK, increment);
 			this.decrementerButton.removeEventListener(MouseEvent.CLICK, decrement);
 			this.thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbOn);
@@ -107,18 +114,28 @@ package org.justincrounds.actionscript {
 			this.thumbDown = false;
 		}
 		private function thumbMove(e:MouseEvent):void {
-			if (this.thumbDown && orientation == "horizontal") {
-				this.currentValue = ((globalToLocal(new Point(e.stageX, e.stageY)).x - (this.thumbSize * 0.5)) - this.trackStart) * ((this.maximumValue - this.minimumValue)/(this.trackLength - this.thumbSize)) + this.minimumValue;
-			} else if (this.thumbDown && orientation == "vertical") {
-				this.currentValue = ((globalToLocal(new Point(e.stageX, e.stageY)).y - (this.thumbSize * 0.5)) - this.trackStart) * ((this.maximumValue - this.minimumValue)/(this.trackLength - this.thumbSize)) + this.minimumValue;
+			if (this.thumbDown) {
+				if (orientation == "horizontal") {
+					this.currentValue = ((globalToLocal(new Point(e.stageX, e.stageY)).x - (this.thumbSize * 0.5)) - this.trackStart) * ((this.maximumValue - this.minimumValue)/(this.trackLength - this.thumbSize)) + this.minimumValue;
+				} else if (orientation == "vertical") {
+					this.currentValue = ((globalToLocal(new Point(e.stageX, e.stageY)).y - (this.thumbSize * 0.5)) - this.trackStart) * ((this.maximumValue - this.minimumValue)/(this.trackLength - this.thumbSize)) + this.minimumValue;
+				}
+				if (this.currentValue < this.minimumValue) {
+					this.currentValue = this.minimumValue;
+				} else if (this.currentValue > this.maximumValue) {
+					this.currentValue = this.maximumValue;
+				}
+				this.currentValue = Math.round(this.currentValue / this.stepSize) * this.stepSize;
+				update();
 			}
-			if (this.currentValue < this.minimumValue) {
-				this.currentValue = this.minimumValue;
-			} else if (this.currentValue > this.maximumValue) {
-				this.currentValue = this.maximumValue;
-			}
-			this.currentValue = Math.round(this.currentValue / this.stepSize) * this.stepSize;
-			update();
+		}
+		private function enableButtons(e:BroadcastEvent):void {
+			this.alpha = 1;
+			this.mouseEnabled = true;
+		}
+		private function disableButtons(e:BroadcastEvent):void {
+			this.alpha = 0.5;
+			this.mouseEnabled = false;
 		}
 	}
 }

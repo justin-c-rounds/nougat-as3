@@ -61,6 +61,7 @@ package org.justincrounds.actionscript {
 				if (actor.children().length() > 0) {
 					thisActor.xml = actor.children();
 				}
+				thisActor.init();
 			}
 		}
 		private function addedToStage(event:Event):void {

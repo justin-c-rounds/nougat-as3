@@ -23,7 +23,6 @@ package org.justincrounds.actionscript {
 					instance[objectAttributes[i].name().toString()] = parseFloat(parseString);
 				}
 			}
-			instance.init();
 			return instance;
 		}
 	}
