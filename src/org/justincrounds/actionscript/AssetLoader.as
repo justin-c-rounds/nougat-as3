@@ -8,6 +8,7 @@ package org.justincrounds.actionscript {
 		private var shape:Shape = new Shape();
 		private var progress:Number;
 		private var _url:String;
+		private var _loaded:Boolean;
 		private var loader:Loader = new Loader();
 		private var applicationDomain:ApplicationDomain = new ApplicationDomain(null);
 		/* Comment out the line below when testing locally in the Flash IDE. */
@@ -15,6 +16,7 @@ package org.justincrounds.actionscript {
 		/* Comment out the line below when building for release. */
 		//private var loaderContext:LoaderContext = new LoaderContext(false, applicationDomain);
 		public function AssetLoader() {
+			_loaded = false;
 			shape.graphics.beginFill(0x000000, 0);
 			shape.graphics.drawRect(0, 0, 1, 1);
 			shape.graphics.endFill();
@@ -39,6 +41,9 @@ package org.justincrounds.actionscript {
 		public function get sharedEvents():EventDispatcher {
 			return loader.contentLoaderInfo.sharedEvents;
 		}
+		public function loaded():Boolean {
+			return _loaded;
+		}
 		private function loadStart(event:Event):void {
 			loader.contentLoaderInfo.removeEventListener(Event.OPEN, loadStart);
 			controller.broadcast("ASSET LOADING", _url);
@@ -48,6 +53,7 @@ package org.justincrounds.actionscript {
 			controller.broadcast("ASSET LOADING PROGRESS", progress);
 		}
 		private function loadComplete(event:Event):void {
+			_loaded = true;
 			loader.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, loadProgress);
 			loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, loadComplete);
 			var asset:DisplayObject = addChild(loader.content);
