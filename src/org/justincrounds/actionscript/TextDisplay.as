@@ -20,19 +20,36 @@ package org.justincrounds.actionscript {
 		private var _scrollRectWidth:Number;
 		private var _scrollRectHeight:Number;
 		public var selectable:Boolean = false;
+		public var input:Boolean = false;
 		public function TextDisplay() {
-			stop();
-			textField.selectable = false;
 			//textField.autoSize = TextFieldAutoSize.LEFT;
 			textField.antiAliasType = AntiAliasType.ADVANCED;
 			textField.embedFonts = true;
-			textField.selectable = this.selectable;
-			addEventListener(Event.ADDED_TO_STAGE, addedToStage, false, 0, true);
 			addChild(textField);
+		}
+		override public function init():void {
 		}
 		override public function set controller(c:Controller):void {
 			super.controller = c;
 			controller.addEventListener("UPDATE TEXT DISPLAY", updateTextDisplay, false, 0, true);
+		}
+		override public function set xml(d:XMLList):void {
+			textField.htmlText = d.toString();
+			super.xml = d;
+		}
+		override protected function addedToStage(e:Event):void {
+			if (input) {
+				textField.type = TextFieldType.INPUT;
+				textField.addEventListener(Event.CHANGE, textInputHandler, false, 0, true);
+			}
+			textField.selectable = this.selectable;
+			alignH = _alignH; // force realignment based on rendered pixel dimensions
+			//textField.height = textField.textHeight;
+			super.addedToStage(e);
+		}
+		override protected function removedFromStage(e:Event):void {
+			controller.removeEventListener("UPDATE TEXT DISPLAY", updateTextDisplay);
+			super.removedFromStage(e);
 		}
 		public function set letterSpacing(l:Number):void {
 			_letterSpacing = l;
@@ -65,10 +82,6 @@ package org.justincrounds.actionscript {
 		}
 		public function get fieldHeight():Number {
 			return textField.height;
-		}
-		override public function set xml(d:XMLList):void {
-			textField.htmlText = d.toString();
-			super.xml = d;
 		}
 		public function set htmlText(s:String):void {
 			textField.htmlText = s;
@@ -119,6 +132,12 @@ package org.justincrounds.actionscript {
 				buildScrollRect();
 			}
 		}
+		protected function textInputHandler(e:Event):void {
+			controller.broadcast('TEXT INPUT CHANGED', {
+				displayName: this.name,
+				inputText: textField.text
+			});
+		}
 		private function buildScrollRect():void {
 			this.scrollRect = new Rectangle(0, 0, _scrollRectWidth, _scrollRectHeight);
 		}
@@ -159,15 +178,6 @@ package org.justincrounds.actionscript {
 		public function set textThickness(textThickness:Number):void {
 			_textThickness = textThickness;
 			textField.thickness = _textThickness;
-		}
-		override protected function addedToStage(e:Event):void {
-			alignH = _alignH; // force realignment based on rendered pixel dimensions
-			//textField.height = textField.textHeight;
-			super.addedToStage(e);
-		}
-		override protected function removedFromStage(e:Event):void {
-			controller.removeEventListener("UPDATE TEXT DISPLAY", updateTextDisplay);
-			super.removedFromStage(e);
 		}
 		protected function updateTextDisplay(e:BroadcastEvent):void {
 			e.object.displayName == this.name ? this.text = e.object.displayText : null;
